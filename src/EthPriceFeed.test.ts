@@ -8,6 +8,7 @@ import {
   PublicKey,
   Party,
   Signature,
+  JSONValue,
 } from 'snarkyjs';
 
 /*
@@ -40,6 +41,11 @@ describe('Add', () => {
   let deployerAccount: PrivateKey,
     zkAppAddress: PublicKey,
     zkAppPrivateKey: PrivateKey;
+  const signatureJSON: JSONValue = {
+    r: '16047317189839310300037309433562432729531219527961893527890138183396213596282',
+    s: '13796934671990055413040091403880890284434414853645492071905299593761877254991',
+  };
+  const signature: Signature | null = Signature.fromJSON(signatureJSON);
 
   beforeEach(async () => {
     await isReady;
@@ -58,16 +64,20 @@ describe('Add', () => {
   it('generates and deploys the `EthPriceFeeds` smart contract', async () => {
     const zkAppInstance = new EthPriceFeed(zkAppAddress);
     await localDeploy(zkAppInstance, zkAppPrivateKey, deployerAccount);
-    const price = zkAppInstance.price.get();
+    const price = zkAppInstance.priceInCents.get();
     expect(price).toEqual(Field.zero);
+    const trustedSigner = zkAppInstance.trustedSigner.get();
+    expect(trustedSigner).toEqual(
+      PublicKey.fromBase58(
+        'B62qnxEfmJi1gTQuR4Fc7E3FcWrQBPm9GaVZ1df2ebMdMQJM543uELt'
+      )
+    );
   });
 
   it('correctly updates the price state on the `EthPriceFeed` smart contract', async () => {
     const zkAppInstance = new EthPriceFeed(zkAppAddress);
     const price = Field(111000);
-    const pk = await PrivateKey.random();
-    const key = pk.toPublicKey();
-    const signature = new Signature(price, pk.s);
+    const key = zkAppInstance.trustedSigner.get();
 
     await localDeploy(zkAppInstance, zkAppPrivateKey, deployerAccount);
     const txn = await Mina.transaction(deployerAccount, () => {
@@ -76,7 +86,7 @@ describe('Add', () => {
     });
     await txn.send().wait();
 
-    const updatedPrice = zkAppInstance.price.get();
+    const updatedPrice = zkAppInstance.priceInCents.get();
     expect(updatedPrice).toEqual(Field(111000));
   });
 });

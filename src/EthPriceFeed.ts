@@ -20,7 +20,8 @@ import {
  * This file is safe to delete and replace with your own contract.
  */
 export class EthPriceFeed extends SmartContract {
-  @state(Field) price = State<Field>();
+  @state(PublicKey as any) trustedSigner = State<PublicKey>();
+  @state(Field) priceInCents = State<Field>();
 
   deploy(args: DeployArgs) {
     super.deploy(args);
@@ -31,13 +32,22 @@ export class EthPriceFeed extends SmartContract {
   }
 
   @method init() {
-    this.price.set(Field(0));
+    this.trustedSigner.set(
+      PublicKey.fromBase58(
+        'B62qnxEfmJi1gTQuR4Fc7E3FcWrQBPm9GaVZ1df2ebMdMQJM543uELt'
+      )
+    );
+    this.priceInCents.set(Field(0));
   }
 
-  @method update(price: Field, signature: Signature, key: PublicKey) {
+  @method update(price: Field, signature: Signature | any, key: PublicKey) {
+    // get trusted public key from state
+    const _trustedSigner = this.trustedSigner.get();
+    // check that the public key of message signer === trusted public key in state
+    key.assertEquals(_trustedSigner);
     // verify the signature
     signature.verify(key, [price]);
-    // if signature is valid, update the state
-    this.price.set(price);
+    // if signature is valid, update the price in state
+    this.priceInCents.set(price);
   }
 }
