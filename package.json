@@ -45,5 +45,8 @@
   },
   "peerDependencies": {
     "snarkyjs": "^0.4.4"
+  },
+  "dependencies": {
+    "node-fetch": "^3.2.6"
   }
 }

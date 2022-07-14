@@ -1,3 +1,3 @@
-import { Add } from './Add.js';
+import { EthPriceFeed } from './EthPriceFeed.js';
 
-export { Add };
+export { EthPriceFeed };
