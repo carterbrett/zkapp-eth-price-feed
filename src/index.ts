@@ -1,3 +1,3 @@
-import { EthPriceFeed } from './EthPriceFeed.js';
+import { PriceFeed } from './PriceFeed.js';
 
-export { EthPriceFeed };
+export { PriceFeed };

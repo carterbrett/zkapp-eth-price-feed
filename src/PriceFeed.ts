@@ -11,17 +11,17 @@ import {
 } from 'snarkyjs';
 
 /**
- * ETH Price Feed Example
+ * Price Feed Example
  * See https://docs.minaprotocol.com/zkapps for more info.
  *
- * The EthPriceFeed contract initializes the state variable 'priceInCents' to be 0 by default when deployed.
+ * The PriceFeed contract initializes the state variable 'priceInCents' to be 0 by default when deployed.
  * It also sets the 'trustedSigner' to the public key 'B62qnxEfmJi1gTQuR4Fc7E3FcWrQBPm9GaVZ1df2ebMdMQJM543uELt'.
- * When the 'updatePrice' method is called, the EthPriceFeed contract checks if a signature and it's
+ * When the 'updatePrice' method is called, the PriceFeed contract checks if a signature and it's
  * public key are trusted and valid, then updates price if both are true.
  *
  * This file is safe to delete and replace with your own contract.
  */
-export class EthPriceFeed extends SmartContract {
+export class PriceFeed extends SmartContract {
   @state(PublicKey as any) trustedSigner = State<PublicKey>();
   @state(Field) priceInCents = State<Field>();
 

@@ -1,4 +1,4 @@
-import { EthPriceFeed } from './EthPriceFeed';
+import { PriceFeed } from './PriceFeed';
 import {
   isReady,
   shutdown,
@@ -26,7 +26,7 @@ function createLocalBlockchain() {
 }
 
 async function localDeploy(
-  zkAppInstance: EthPriceFeed,
+  zkAppInstance: PriceFeed,
   zkAppPrivkey: PrivateKey,
   deployerAccount: PrivateKey
 ) {
@@ -38,7 +38,7 @@ async function localDeploy(
   await txn.send().wait();
 }
 
-describe('EthPriceFeed', () => {
+describe('PriceFeed', () => {
   let deployerAccount: PrivateKey,
     zkAppAddress: PublicKey,
     zkAppPrivateKey: PrivateKey,
@@ -61,8 +61,8 @@ describe('EthPriceFeed', () => {
     setTimeout(shutdown, 0);
   });
 
-  it('generates and deploys the `EthPriceFeed` smart contract', async () => {
-    const zkAppInstance = new EthPriceFeed(zkAppAddress);
+  it('generates and deploys the `PriceFeed` smart contract', async () => {
+    const zkAppInstance = new PriceFeed(zkAppAddress);
     await localDeploy(zkAppInstance, zkAppPrivateKey, deployerAccount);
     const price = zkAppInstance.priceInCents.get();
     expect(price).toEqual(Field.zero);
@@ -74,8 +74,8 @@ describe('EthPriceFeed', () => {
     );
   });
 
-  it('correctly updates the price state on the `EthPriceFeed` smart contract', async () => {
-    const zkAppInstance = new EthPriceFeed(zkAppAddress);
+  it('correctly updates the price state on the `PriceFeed` smart contract', async () => {
+    const zkAppInstance = new PriceFeed(zkAppAddress);
     const newPrice = Field(111000);
     const _trustedSigner = PublicKey.fromBase58(
       'B62qnxEfmJi1gTQuR4Fc7E3FcWrQBPm9GaVZ1df2ebMdMQJM543uELt'
