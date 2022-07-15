@@ -11,11 +11,13 @@ import {
 } from 'snarkyjs';
 
 /**
- * Basic Example
+ * ETH Price Feed Example
  * See https://docs.minaprotocol.com/zkapps for more info.
  *
- * The Add contract initializes the state variable 'num' to be a Field(1) value by default when deployed.
- * When the 'update' method is called, the Add contract adds Field(2) to its 'num' contract state.
+ * The EthPriceFeed contract initializes the state variable 'priceInCents' to be 0 by default when deployed.
+ * It also sets the 'trustedSigner' to the public key 'B62qnxEfmJi1gTQuR4Fc7E3FcWrQBPm9GaVZ1df2ebMdMQJM543uELt'.
+ * When the 'updatePrice' method is called, the EthPriceFeed contract checks if a signature and it's
+ * public key are trusted and valid, then updates price if both are true.
  *
  * This file is safe to delete and replace with your own contract.
  */
