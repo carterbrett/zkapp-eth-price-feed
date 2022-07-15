@@ -8,7 +8,6 @@ import {
   PublicKey,
   Party,
   Signature,
-  JSONValue,
 } from 'snarkyjs';
 
 /*
@@ -17,6 +16,8 @@ import {
  *
  * See https://docs.minaprotocol.com/zkapps for more info.
  */
+
+await isReady;
 
 function createLocalBlockchain() {
   const Local = Mina.LocalBlockchain();
@@ -37,21 +38,20 @@ async function localDeploy(
   await txn.send().wait();
 }
 
-describe('Add', () => {
+describe('EthPriceFeed', () => {
   let deployerAccount: PrivateKey,
     zkAppAddress: PublicKey,
-    zkAppPrivateKey: PrivateKey;
-  const signatureJSON: JSONValue = {
-    r: '16047317189839310300037309433562432729531219527961893527890138183396213596282',
-    s: '13796934671990055413040091403880890284434414853645492071905299593761877254991',
-  };
-  const signature: Signature | null = Signature.fromJSON(signatureJSON);
+    zkAppPrivateKey: PrivateKey,
+    signature: Signature | any;
 
   beforeEach(async () => {
-    await isReady;
     deployerAccount = createLocalBlockchain();
     zkAppPrivateKey = PrivateKey.random();
     zkAppAddress = zkAppPrivateKey.toPublicKey();
+    signature = Signature.fromJSON({
+      r: '16047317189839310300037309433562432729531219527961893527890138183396213596282',
+      s: '13796934671990055413040091403880890284434414853645492071905299593761877254991',
+    });
   });
 
   afterAll(async () => {
@@ -61,7 +61,7 @@ describe('Add', () => {
     setTimeout(shutdown, 0);
   });
 
-  it('generates and deploys the `EthPriceFeeds` smart contract', async () => {
+  it('generates and deploys the `EthPriceFeed` smart contract', async () => {
     const zkAppInstance = new EthPriceFeed(zkAppAddress);
     await localDeploy(zkAppInstance, zkAppPrivateKey, deployerAccount);
     const price = zkAppInstance.priceInCents.get();
@@ -77,13 +77,16 @@ describe('Add', () => {
   it('correctly updates the price state on the `EthPriceFeed` smart contract', async () => {
     const zkAppInstance = new EthPriceFeed(zkAppAddress);
     const price = Field(111000);
-    const key = zkAppInstance.trustedSigner.get();
+    const _trustedSigner = PublicKey.fromBase58(
+      'B62qnxEfmJi1gTQuR4Fc7E3FcWrQBPm9GaVZ1df2ebMdMQJM543uELt'
+    );
 
     await localDeploy(zkAppInstance, zkAppPrivateKey, deployerAccount);
     const txn = await Mina.transaction(deployerAccount, () => {
-      zkAppInstance.update(price, signature, key);
+      zkAppInstance.update(price, signature, _trustedSigner);
       zkAppInstance.sign(zkAppPrivateKey);
     });
+
     await txn.send().wait();
 
     const updatedPrice = zkAppInstance.priceInCents.get();

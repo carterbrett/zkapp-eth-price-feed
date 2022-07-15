@@ -40,7 +40,7 @@ export class EthPriceFeed extends SmartContract {
     this.priceInCents.set(Field(0));
   }
 
-  @method update(price: Field, signature: Signature | any, key: PublicKey) {
+  @method update(price: Field, signature: Signature, key: PublicKey) {
     // get trusted public key from state
     const _trustedSigner = this.trustedSigner.get();
     // check that the public key of message signer === trusted public key in state
