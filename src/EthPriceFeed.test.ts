@@ -76,14 +76,14 @@ describe('EthPriceFeed', () => {
 
   it('correctly updates the price state on the `EthPriceFeed` smart contract', async () => {
     const zkAppInstance = new EthPriceFeed(zkAppAddress);
-    const price = Field(111000);
+    const newPrice = Field(111000);
     const _trustedSigner = PublicKey.fromBase58(
       'B62qnxEfmJi1gTQuR4Fc7E3FcWrQBPm9GaVZ1df2ebMdMQJM543uELt'
     );
 
     await localDeploy(zkAppInstance, zkAppPrivateKey, deployerAccount);
     const txn = await Mina.transaction(deployerAccount, () => {
-      zkAppInstance.update(price, signature, _trustedSigner);
+      zkAppInstance.updatePrice(newPrice, signature, _trustedSigner);
       zkAppInstance.sign(zkAppPrivateKey);
     });
 
